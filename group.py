@@ -1,6 +1,6 @@
 class Group():
 
-    def __init__(self, groupName, members=[]):
+    def __init__(self, groupName='', members=[]):
         self.name = groupName
         self.members = members
         self.totalMembers = len(members)

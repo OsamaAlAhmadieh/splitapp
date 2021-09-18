@@ -88,3 +88,61 @@ window = MainWindow()
 window.show()
 
 app.exec()
+
+
+
+
+
+
+
+
+
+
+
+######################################################################3
+    #Depricated functions
+
+    def added_group_name(self):
+
+        var = self.name.text()
+        grp = group.Group(var)
+        self.name.clear()
+        self.groupNameWindow.close()
+
+        self.numberOfGroups += 1
+        self.AllGroups.append(grp)
+
+        self.newGroupButton = QPushButton(var)
+        self.AllGroupButtons.append(self.newGroupButton)
+        
+        self.layout.addWidget(self.newGroupButton, self.numberOfGroups, 0)
+
+        self.newGroupButton.clicked.connect(self.add_group_members)
+
+    def add_group_members(self):
+        selected_group = self.get_current_group()
+        print(selected_group)
+        print(type(selected_group))
+        self.memberName = QLineEdit()
+        self.addMemberAddButton = QPushButton('Add member')
+
+        self.addMemberWindow = QWidget()
+        self.gridLayout = QGridLayout()
+        self.gridLayout.addWidget(self.memberName, 0, 0)
+        self.gridLayout.addWidget(self.addMemberAddButton, 1, 0)
+
+        self.addMemberWindow.setWindowTitle('Add new Member')
+        self.addMemberWindow.setFixedSize(QSize(300, 100))
+        self.addMemberWindow.setLayout(self.gridLayout)
+
+        self.addMemberWindow.show()
+
+        self.addMemberAddButton.clicked.connect(lambda: self.added_new_member(selected_group))
+        
+
+    def added_new_member(self, selected_group):
+        member = self.memberName.text()
+        self.memberName.clear()
+        current_grp = self.get_current_group(selected_group)
+        current_grp.add_member(member)
+        print(current_grp)

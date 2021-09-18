@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QLine, QSize
 from PyQt5.QtWidgets import QApplication, QPushButton, QMainWindow, QLineEdit, QWidget
 from PyQt5.QtWidgets import QGridLayout
 import sys
@@ -14,19 +14,18 @@ class MainWindow(QWidget):
         self.setFixedSize(QSize(600, 600))
 
         self.addGroupButton = QPushButton('Add Group')
-        self.addGroupButton.clicked.connect(self.add_group)
+        self.addGroupButton.clicked.connect(self.create_add_group_window)
 
         self.layout.addWidget(self.addGroupButton, 0, 0)
 
         self.setLayout(self.layout)
 
+        # Backend related stuff
+        self.total_groups = 0
+        self.all_groups = []
+        self.MAXGROUPS = 5 
 
-        # Backend Related Stuff
-        self.numberOfGroups = 0
-        self.AllGroups = []
-        
-
-    def add_group(self):
+    def create_add_group_window(self):
         self.name = QLineEdit()
         self.addGroupAddButton = QPushButton('Add')
 
@@ -41,31 +40,49 @@ class MainWindow(QWidget):
         self.groupNameWindow.setLayout(self.gridLayout)
         self.groupNameWindow.show()
 
-        self.addGroupAddButton.clicked.connect(self.added_group_name)
-
+        self.addGroupAddButton.clicked.connect(self.add_group_name)
         
-    def added_group_name(self):
 
-        var = self.name.text()
-        grp = group.Group(var)
-        self.name.clear()
-        self.groupNameWindow.close()
-
-        self.numberOfGroups += 1
-        self.AllGroups.append(grp)
-
-        self.newGroupButton = QPushButton(var)
-        self.layout.addWidget(self.newGroupButton, self.numberOfGroups, 0)
-
-        self.newGroupButton.clicked.connect(self.add_group_members)
+    def add_group_name(self):
         
+        if self.total_groups == 0:
+            var = self.name.text()
+            grp1 = group.Group(var)
+            self.name.clear()
+            self.groupNameWindow.close()
+
+            self.total_groups += 1 
+            self.all_groups.append(grp1)
+
+            self.grp1Button = QPushButton(var)
+            self.layout.addWidget(self.grp1Button, self.total_groups, 0)
+
+            self.grp1Button.clicked.connect(lambda: self.create_add_members_window(grp1.name))
+
+            return
         
-    def add_group_members(self):
-        selected_group = self.newGroupButton.text()
-        print(selected_group)
-        print(type(selected_group))
+        if self.total_groups == 1:
+            var = self.name.text()
+            grp2 = group.Group(var)
+            self.name.clear()
+            self.groupNameWindow.close()
+
+            self.total_groups += 1
+            self.all_groups.append(grp2)
+
+            self.grp2Button = QPushButton(var)
+            self.layout.addWidget(self.grp2Button, self.total_groups, 0)
+
+            self.grp2Button.clicked.connect(lambda: self.create_add_members_window(grp2.name))
+
+            return
+
+    def create_add_members_window(self, extra_arg):
+
+        print(extra_arg)
+
         self.memberName = QLineEdit()
-        self.addMemberAddButton = QPushButton('Add member')
+        self.addMemberAddButton = QPushButton('Add Member')
 
         self.addMemberWindow = QWidget()
         self.gridLayout = QGridLayout()
@@ -78,21 +95,7 @@ class MainWindow(QWidget):
 
         self.addMemberWindow.show()
 
-        self.addMemberAddButton.clicked.connect(lambda: self.added_new_member(selected_group))
-
-
-
-    def added_new_member(self, selected_group):
-        member = self.memberName.text()
-        self.memberName.clear()
-        current_grp = self.get_current_group(selected_group)
-        current_grp.add_member(member)
-
-
-    def get_current_group(self, selected_group):
-        for elt in self.AllGroups:
-            if elt.name == selected_group:
-                return elt
+        self.addMemberAddButton.clicked.conenct(self.added_gr)
 
 
 app = QApplication(sys.argv)
