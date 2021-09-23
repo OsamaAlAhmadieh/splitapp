@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QLine, QSize
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QApplication, QPushButton, QMainWindow, QLineEdit, QWidget
+from PyQt5.QtWidgets import QApplication, QPushButton, QMainWindow, QLineEdit, QWidget, QTableWidget, QHeaderView
 from PyQt5.QtWidgets import QGridLayout
 import sys
 import group
@@ -64,7 +64,8 @@ class MainWindow(QWidget):
             self.grp1Button = QPushButton(var)
             self.layout.addWidget(self.grp1Button, self.total_groups, 0)
 
-            self.grp1Button.clicked.connect(lambda: self.create_add_members_window(grp1.name))
+            #self.grp1Button.clicked.connect(lambda: self.create_add_members_window(grp1.name))
+            self.grp1Button.clicked.connect(lambda: self.create_new_window_for_group(grp1.name))
 
             return
         
@@ -119,6 +120,29 @@ class MainWindow(QWidget):
         for elt in self.all_groups:
             print(elt.name)
             print(elt.members)
+
+
+    def create_new_window_for_group(self, current_group_name):
+        current_group = self.find_current_group(current_group_name)[0]
+        #4 columns: name, paid, owes, and net. 
+        self.group_view = QTableWidget(len(current_group.members), 4)
+        #self.group_view.setFixedSize(QSize(600,300))
+        header = self.group_view.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+
+        self.group_view_window = QWidget()
+        self.layout_group_view_window = QGridLayout()
+
+        self.layout_group_view_window.addWidget(self.group_view, 0, 0)
+
+        self.group_view_window.setLayout(self.layout_group_view_window)
+
+        self.group_view_window.show()
+        
+
+        
+
+    
 
 
 app = QApplication(sys.argv)
