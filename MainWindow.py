@@ -1,4 +1,5 @@
 from PyQt5.QtCore import QLine, QSize
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QApplication, QPushButton, QMainWindow, QLineEdit, QWidget
 from PyQt5.QtWidgets import QGridLayout
 import sys
@@ -14,9 +15,14 @@ class MainWindow(QWidget):
         self.setFixedSize(QSize(600, 600))
 
         self.addGroupButton = QPushButton('Add Group')
+        self.addGroupButton.setShortcut(QKeySequence('ctrl+n'))
         self.addGroupButton.clicked.connect(self.create_add_group_window)
 
+        self.displayAllGroupsButton = QPushButton('Display')
+        self.displayAllGroupsButton.clicked.connect(self.display_groups_callback)
+
         self.layout.addWidget(self.addGroupButton, 0, 0)
+        self.layout.addWidget(self.displayAllGroupsButton, 0, 1)
 
         self.setLayout(self.layout)
 
@@ -28,6 +34,7 @@ class MainWindow(QWidget):
     def create_add_group_window(self):
         self.name = QLineEdit()
         self.addGroupAddButton = QPushButton('Add')
+        self.addGroupAddButton.setShortcut(QKeySequence('return'))
 
         self.groupNameWindow = QWidget()
         self.gridLayout = QGridLayout()
@@ -47,7 +54,7 @@ class MainWindow(QWidget):
         
         if self.total_groups == 0:
             var = self.name.text()
-            grp1 = group.Group(var)
+            grp1 = group.Group(var, [])
             self.name.clear()
             self.groupNameWindow.close()
 
@@ -63,7 +70,7 @@ class MainWindow(QWidget):
         
         if self.total_groups == 1:
             var = self.name.text()
-            grp2 = group.Group(var)
+            grp2 = group.Group(var, [])
             self.name.clear()
             self.groupNameWindow.close()
 
@@ -77,12 +84,10 @@ class MainWindow(QWidget):
 
             return
 
-    def create_add_members_window(self, extra_arg):
-
-        print(extra_arg)
-
+    def create_add_members_window(self, current_group_name):
         self.memberName = QLineEdit()
         self.addMemberAddButton = QPushButton('Add Member')
+        self.addMemberAddButton.setShortcut(QKeySequence('return'))
 
         self.addMemberWindow = QWidget()
         self.gridLayout = QGridLayout()
@@ -95,7 +100,25 @@ class MainWindow(QWidget):
 
         self.addMemberWindow.show()
 
-        self.addMemberAddButton.clicked.conenct(self.added_gr)
+        self.addMemberAddButton.clicked.connect(lambda: self.added_member_name(current_group_name))
+
+
+    def  added_member_name(self, current_group_name):
+        var = self.memberName.text()
+        self.memberName.clear()
+        current_group, index = self.find_current_group(current_group_name)
+        current_group.add_member(var)
+        self.all_groups[index] = current_group
+
+    def find_current_group(self, current_group_name):
+        for elt in self.all_groups:
+            if elt.name == current_group_name:
+                return elt, self.all_groups.index(elt)
+
+    def display_groups_callback(self):
+        for elt in self.all_groups:
+            print(elt.name)
+            print(elt.members)
 
 
 app = QApplication(sys.argv)
